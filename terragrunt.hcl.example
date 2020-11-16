@@ -1,0 +1,23 @@
+include {
+  path = find_in_parent_folders()
+}
+
+terraform {
+  source = "git::ssh://git@gitlab.com:mvideoru/tech-platform/docctip/terraform/modules/redis-cluster-yandex.git"
+}
+
+inputs = {
+
+env  = "test-env"
+folder_id  = "xxxxxxxxxxxxxxxxx"
+name = "cluter-name"
+type = "PRESTABLE"
+network_id = "xxxxxxxxxxxxxxxxxxx"
+redis_version = "5.0"
+resource_preset = "hm2.nano" # 2core/8Gb
+disk_size = 40
+redis_password = "12345678"
+shard_num = 1  #  если 1 то будет стандалон сентинель кластер, если поставить 3 шарда - будет шардированный редис кластер.
+replica_num = 1 #  сколько реплик делать. 1 - без слейвов.
+}
+
