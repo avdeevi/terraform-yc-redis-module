@@ -34,12 +34,9 @@ variable "shard_num" {
  default = 1
 }
 
-#variable "zone" {
-#default = 0
-#type = number
-#}
+variable "subnet_index" {
+  type = string
+  default = "1"
+}
 
-#variable "sharded" {
-# type = bool
-#}
-#
+

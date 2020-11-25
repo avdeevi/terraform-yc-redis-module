@@ -1,19 +1,32 @@
-data "terraform_remote_state" "subnets" {
-  backend = "s3"
-  config = {
-    endpoint                    = "storage.yandexcloud.net"
-    bucket                      = "terraform-state-backet"
-    region                      = "us-east-1"
-    key                         = "${var.env}/network/terraform.tfstate"
-    skip_region_validation      = true
-    skip_credentials_validation = true
-  }
+data "yandex_resourcemanager_folder" "my_folder" {
+  name =  var.env
+}
+
+data "yandex_vpc_subnet" "my_subnet_a" {
+  name = "${var.env}-private-subnet${var.subnet_index}-a"
+  folder_id = data.yandex_resourcemanager_folder.my_folder.id
+}
+
+data "yandex_vpc_subnet" "my_subnet_b" {
+  name = "${var.env}-private-subnet${var.subnet_index}-b"
+  folder_id = data.yandex_resourcemanager_folder.my_folder.id
+}
+
+data "yandex_vpc_subnet" "my_subnet_c" {
+  name = "${var.env}-private-subnet${var.subnet_index}-c"
+  folder_id = data.yandex_resourcemanager_folder.my_folder.id
 }
 
 locals {
 
+list_subnets = [
+        data.yandex_vpc_subnet.my_subnet_a,
+        data.yandex_vpc_subnet.my_subnet_b,
+        data.yandex_vpc_subnet.my_subnet_c
+          ]
+
 subnets = [ for z in range(var.shard_num):
-            [ for  k,v in slice(data.terraform_remote_state.subnets.outputs["private_subnets"],0,var.replica_num):
+            [ for  k,v in slice(local.list_subnets,0,var.replica_num):
               {
                 zone = v.zone,
                 id = v.id,
@@ -21,11 +34,10 @@ subnets = [ for z in range(var.shard_num):
               }
           ]
       ]
-}
 
-locals {
-   instances = flatten(local.subnets)
-   cluster_type = var.shard_num > 1 ? "sharded" : "standalone"
+instances = flatten(local.subnets)
+cluster_type = var.shard_num > 1 ? "sharded" : "standalone"
+
 }
 
 
