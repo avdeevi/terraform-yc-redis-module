@@ -3,7 +3,7 @@ include {
 }
 
 terraform {
-  source = "git::ssh://git@gitlab.com:mvideoru/tech-platform/docctip/terraform/modules/redis-cluster-yandex.git"
+  source = "git::git@github.com:avdeevi/terraform-yc-redis-module.git"
 }
 
 inputs = {
@@ -17,8 +17,8 @@ redis_version = "5.0"
 resource_preset = "hm2.nano" # 2core/8Gb
 disk_size = 40
 redis_password = "12345678"
-shard_num = 1  #  если 1 то будет стандалон сентинель кластер, если поставить 3 шарда - будет шардированный редис кластер.
-replica_num = 1 #  сколько реплик делать. 1 - без слейвов.
-subnet_index = 2 # если в фолдере больше одного набора сабнетов , то можно указать какой набор использовать для разворачивания кластера.
+shard_num = 1  #  if you set 1 you get standalone sentinel cluster, if you set 3 - we get sharded redis clsuter
+replica_num = 1 #  how many replics for every master ( 0 - without replics)
+subnet_index = 1 # if we have more than 1 subnet in every zone, yo cat set index of subnet for use. It based on module https://github.com/avdeevi/terraform-yc-subnets-module
 }
 
